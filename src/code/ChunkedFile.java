@@ -13,7 +13,7 @@ public class ChunkedFile extends OutputStream{
 	private File file;
 	private RandomAccessFile raf;
 	public static long currlen = 0;
-	public static long maxlen = 1024 * 1024 * 1024;
+	public static long maxlen = 10 * 1024 * 1024;
 
 	public ChunkedFile(String zipFilename) throws FileNotFoundException {
 		 currlen = 0;
