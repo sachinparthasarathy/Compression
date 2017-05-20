@@ -35,7 +35,7 @@ public class ZipCompressor extends Compressor
 	
 	private void addFilesToZip(List<File> files,String outputPath) throws IOException 
     {
-		String zipFileName = outputPath+name+zipIndex+".zip";
+		String zipFileName = outputPath + Constants.seperator + name+zipIndex+".zip";
    	    ChunkedFile chunkedFile = new ChunkedFile(zipFileName);
    	    zipOutputStream = new ZipOutputStream(chunkedFile);
    	    
@@ -55,7 +55,10 @@ public class ZipCompressor extends Compressor
 			 ZipEntry entry =new ZipEntry(zipEntryPath);
         	 zipOutputStream.putNextEntry(entry);
         	        	 
-        	 byte[] buffer = new byte[1024];
+        	 long jvmMemory = Runtime.getRuntime().freeMemory();
+        	 long fileSize = file.length();
+        	 int bufferSize = (int)Math.min(jvmMemory, fileSize);
+        	 byte[] buffer = new byte[bufferSize];
         	 FileInputStream in = new FileInputStream(file);
              int len;  
              while ((len = in.read(buffer)) > 0) 
@@ -65,7 +68,7 @@ public class ZipCompressor extends Compressor
                      zipOutputStream.finish();
                      chunkedFile.currlen =  0;
                      zipIndex ++;
-                     zipFileName = outputPath+name+zipIndex+".zip";
+                     zipFileName = outputPath+ Constants.seperator + name+zipIndex+".zip";
                      
                      chunkedFile = new ChunkedFile(zipFileName);
                 	 zipOutputStream = new ZipOutputStream(chunkedFile);
@@ -82,6 +85,7 @@ public class ZipCompressor extends Compressor
                 	 zipOutputStream.write(buffer, 0, len);
             	 }
              }
+             in.close();
         }
        
         zipOutputStream.closeEntry();

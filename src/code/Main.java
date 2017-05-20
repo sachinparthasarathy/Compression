@@ -1,6 +1,7 @@
 package code;
 
 import java.io.File;
+import java.util.Date;
 
 public class Main {
 
@@ -43,8 +44,12 @@ public class Main {
 				 isValidInput = true;
 			 
 			 if(isValidInput){
+				 long startTime = System.currentTimeMillis();
+				 long elapsedTime = 0L;
 				 Compressor compressor = new ZipCompressor();
 				 compressor.run(inputPath, outputPath);
+				 elapsedTime = System.currentTimeMillis();
+				 System.out.println(elapsedTime - startTime);
 			 }else{
 				 System.out.println("Input Path invalid");
 			 }
