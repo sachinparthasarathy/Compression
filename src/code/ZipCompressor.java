@@ -2,11 +2,7 @@ package code;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -14,17 +10,17 @@ import java.util.zip.ZipOutputStream;
 public class ZipCompressor extends Compressor
 {
 	private ZipOutputStream zipOutputStream;
-    private String path;
     private String name = "Compressed";
     private long zipIndex = 0;
     private long fileIndex = 0;
+    private int maxSplitSize = 0;
     
 	@Override
-	void compress(List<File> files, String outputPath) 
+	void compress(List<File> files, String outputPath,int maxSplitsize) 
 	{
 		try
 		{
-			path = outputPath;
+			this.maxSplitSize = maxSplitsize;
 			addFilesToZip(files,outputPath);
 		}
 		catch(IOException e)
@@ -38,7 +34,7 @@ public class ZipCompressor extends Compressor
 		String zipFileName = outputPath+ Constants.seperator + name+zipIndex+".zip";
    	    ChunkedFile chunkedFile = new ChunkedFile(zipFileName);
    	    zipOutputStream = new ZipOutputStream(chunkedFile);
-   	    long jvmMemory = Runtime.getRuntime().freeMemory();
+   	    //long jvmMemory = Runtime.getRuntime().freeMemory();
    	    for(File file:files)
         {
    	    	if(file.isDirectory())
@@ -54,18 +50,18 @@ public class ZipCompressor extends Compressor
 			 ZipEntry entry =new ZipEntry(zipEntryPath);
         	 zipOutputStream.putNextEntry(entry);
         	        	 
-        	 long fileSize = file.length();
-        	 int bufferSize = (int)Math.min(jvmMemory, fileSize);
+        	 //long fileSize = file.length();
+        	 //int bufferSize = (int)Math.min(jvmMemory, fileSize);
         	 byte[] buffer = new byte[1024];        	 
 
         	 FileInputStream in = new FileInputStream(file);
              int len;  
              while ((len = in.read(buffer)) > 0) 
              {   
-            	 if((chunkedFile.currlen + len )> chunkedFile.maxlen){
+            	 if((chunkedFile.getCurrlen() + len )> maxSplitSize){
                      zipOutputStream.closeEntry();
                      zipOutputStream.finish();
-                     chunkedFile.currlen =  0;
+                     chunkedFile.setCurrlen(0);
                      zipIndex ++;
                      zipFileName = outputPath+ Constants.seperator + name+zipIndex+".zip";
                      
@@ -84,6 +80,7 @@ public class ZipCompressor extends Compressor
                 	 zipOutputStream.write(buffer, 0, len);
             	 }
              }
+             in.close();
         }
        
         zipOutputStream.closeEntry();

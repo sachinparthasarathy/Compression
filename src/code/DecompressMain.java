@@ -12,26 +12,44 @@ import java.util.zip.ZipInputStream;
 
 public class DecompressMain
 {
-	private static final String INPUT_ZIP_FOLDER = "C:\\interview_prep\\ZipOutput";
-	private static final String OUTPUT_FOLDER = "C:\\interview_prep\\DecompressOutput";
-
 	private static final int DecompressThreadPool = 25;
 
 	public static void main( String[] args )
 	{
+		String inputPath = null;
+		String outputPath = null;
+		
+		if(args.length != 2){
+			System.out.println("Usage: java DecompressMain inputPath outputPath ");
+		}
+		
+		if(args[0] == null){
+			System.out.println("Please enter the Input file Path!!!");
+			System.exit(0);
+		}else{
+			inputPath = args[0];
+		}
+
+		if(args[1] == null){
+			System.out.println("Please enter the Output file Path!!!");
+			System.exit(0);
+		}else{
+			outputPath = args[1];
+		}
+		
 		long startTime = System.currentTimeMillis();
 		long elapsedTime = 0L;
 		Constants.jvmMemory = Runtime.getRuntime().freeMemory();
-		decompress();		
-		MergeFilesHelper m = new MergeFilesHelper(OUTPUT_FOLDER);
+		decompress(inputPath,outputPath);		
+		MergeFilesHelper m = new MergeFilesHelper(outputPath);
 		m.doMerge();
 		elapsedTime = System.currentTimeMillis();
-		System.out.println(elapsedTime - startTime);
+		System.out.println("Took " + (elapsedTime - startTime)/1000 +" seconds");
 	}
 
-	public static void decompress()
+	public static void decompress(String inputPath, String outputPath)
 	{
-		File folder = new File(INPUT_ZIP_FOLDER);  	
+		File folder = new File(inputPath);  	
 		File[] files = folder.listFiles();
 
 		ExecutorService executor = Executors.newFixedThreadPool(DecompressThreadPool);
@@ -39,8 +57,8 @@ public class DecompressMain
 		for(File file :files)
 		{
 			String fileName = file.getName();
-			Runnable worker = new DecompressWorker(INPUT_ZIP_FOLDER + "\\"+fileName,
-					OUTPUT_FOLDER);
+			Runnable worker = new DecompressWorker(inputPath + "\\"+fileName,
+					outputPath);
 			executor.execute(worker);			
 		}
 		executor.shutdown();

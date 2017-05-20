@@ -2,21 +2,26 @@ package code;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.util.zip.ZipOutputStream;
 
 public class ChunkedFile extends OutputStream{
 
 	private File file;
 	private RandomAccessFile raf;
-	public static long currlen = 0;
-	public static long maxlen = 10 * 1024 * 1024;
+	private long currlen;
+
+	public long getCurrlen() {
+		return currlen;
+	}
+
+	public void setCurrlen(long currlen) {
+		this.currlen = currlen;
+	}
 
 	public ChunkedFile(String zipFilename) throws FileNotFoundException {
-		 currlen = 0;
+		 this.currlen = 0;
          file = new File(zipFilename);
 		 raf = new RandomAccessFile(file,"rw");
 	}
