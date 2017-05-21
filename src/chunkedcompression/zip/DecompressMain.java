@@ -1,4 +1,4 @@
-package code;
+package chunkedcompression.zip;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import chunkedcompression.Constants;
 
 public class DecompressMain
 {
@@ -40,11 +42,13 @@ public class DecompressMain
 		long startTime = System.currentTimeMillis();
 		long elapsedTime = 0L;
 		Constants.jvmMemory = Runtime.getRuntime().freeMemory();
+		
 		decompress(inputPath,outputPath);		
-		MergeFilesHelper m = new MergeFilesHelper(outputPath);
-		m.doMerge();
+		ZipMerge mergingAlgorithm = new ZipMerge(outputPath);
+		mergingAlgorithm.doMerge();
+		
 		elapsedTime = System.currentTimeMillis();
-		System.out.println("Took " + (elapsedTime - startTime)/1000 +" seconds");
+		System.out.println("Decompression took " + (elapsedTime - startTime)/1000 +" seconds");
 	}
 
 	public static void decompress(String inputPath, String outputPath)
@@ -57,11 +61,13 @@ public class DecompressMain
 		for(File file :files)
 		{
 			String fileName = file.getName();
-			Runnable worker = new DecompressWorker(inputPath + "\\"+fileName,
+			Runnable worker = new DecompressWorker(inputPath + File.separator + fileName,
 					outputPath);
 			executor.execute(worker);			
 		}
+		
 		executor.shutdown();
+		
 		try {
 			while (!executor.awaitTermination(2, TimeUnit.SECONDS)) {}
 		} catch (InterruptedException e) {

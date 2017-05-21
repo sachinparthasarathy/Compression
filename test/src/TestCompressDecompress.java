@@ -9,20 +9,18 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-public class testUnit {
+public class TestCompressDecompress {
 	@Test
 	public void testAdd() throws IOException {
-		String str = "Junit is working fine";
-		assertEquals("Junit is working fine",str);
+		String dirOrig = "/home/errol/test/sample";
+		String dirNew = "/home/errol/zipoutput";
 
-		String dirOrig = "..\test1";
-		String dirNew = "C:\\interview_prep\\DecompressOutput\\Simulation";
-
-		assertEquals(EumerateAndCompress(dirOrig,dirNew),true);
+		boolean res = EumerateAndCompare(dirOrig,dirNew); 
+		assertEquals(res, true);
 	}
 
 
-	private boolean EumerateAndCompress(String dir1, String dir2) throws IOException
+	private boolean EumerateAndCompare(String dir1, String dir2) throws IOException
 	{
 		boolean isCompare = true;
 		File[] fileList1 = new File(dir1).listFiles();
@@ -40,7 +38,7 @@ public class testUnit {
 				return false;
 			if (true == fileList1[i].isDirectory())
 			{
-				isCompare &= EumerateAndCompress(fileList1[i].getAbsolutePath(), fileList2[i].getAbsolutePath());
+				isCompare &= EumerateAndCompare(fileList1[i].getAbsolutePath(), fileList2[i].getAbsolutePath());
 			}
 			else
 				isCompare &= compare(fileList1[i], fileList2[i]);
@@ -53,15 +51,21 @@ public class testUnit {
 		byte[] b1 = getBytesFromFile(file1);
 		byte[] b2 = getBytesFromFile(file2);
 
-		if(b1.length != b2.length) return false;
+		if(b1.length != b2.length) 
+			return false;
 		for(int i = 0; i < b1.length; i++) {
-			if(b1[i] != b2[i]) return false;
+			if(b1[i] != b2[i]) 
+				return false;
 		}
 		return true;
 	}
 
-	// Returns the contents of the file in a byte array.
-	// shamelessly stolen from http://www.exampledepot.com/egs/java.io/file2bytearray.html
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
 	public static byte[] getBytesFromFile(File file) throws IOException {
 		InputStream is = new FileInputStream(file);
 

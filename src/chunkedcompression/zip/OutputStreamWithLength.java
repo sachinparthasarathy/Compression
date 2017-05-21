@@ -1,4 +1,4 @@
-package code;
+package chunkedcompression.zip;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,24 +6,25 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
-public class ChunkedFile extends OutputStream{
+public class OutputStreamWithLength extends OutputStream{
 
 	private File file;
-	private RandomAccessFile raf;
-	private long currlen;
+	private RandomAccessFile outputFile;
+	private long currentWriteLength;
 
-	public long getCurrlen() {
-		return currlen;
+	public long getCurrentWriteLength() 
+	{
+		return currentWriteLength;
 	}
 
-	public void setCurrlen(long currlen) {
-		this.currlen = currlen;
+	public void setCurrentWriteLength(long length) {
+		this.currentWriteLength = length;
 	}
 
-	public ChunkedFile(String zipFilename) throws FileNotFoundException {
-		 this.currlen = 0;
+	public OutputStreamWithLength(String zipFilename) throws FileNotFoundException {
+		 this.currentWriteLength = 0;
          file = new File(zipFilename);
-		 raf = new RandomAccessFile(file,"rw");
+		 outputFile = new RandomAccessFile(file, "rw");
 	}
 		
 	@Override
@@ -37,17 +38,19 @@ public class ChunkedFile extends OutputStream{
 	public void write(byte b[], int off, int len) throws IOException {
 		try
 		{
-			raf.write(b, off, len);
-			currlen += len; 
+			outputFile.write(b, off, len);
+			currentWriteLength += len; 
 		}
 		catch(Exception e)
 		{
+			System.err.println("Not able to write to zip file");
 			e.printStackTrace();
 		}
 	}
 	
 
-	public void close() throws IOException{
-		raf.close();
+	public void close() throws IOException
+	{
+		outputFile.close();
 	}
 }

@@ -1,8 +1,16 @@
-package code;
+package chunkedcompression;
 
 import java.io.File;
 
-public class CompressorMain {
+import chunkedcompression.zip.ZipCompression;
+
+/**
+ * 
+ * @author errol
+ *
+ */
+
+public class CompressionMain {
 	public static void main(String[] args) 
 	{
 		String inputPath = null;
@@ -68,13 +76,16 @@ public class CompressorMain {
 		if(isValidInput){
 			long startTime = System.currentTimeMillis();
 			long elapsedTime = 0L;
-			Compressor compressor = new ZipCompressor();
-			compressor.run(inputPath, outputPath,maxSplitsize);
+			
+			CompressionBase compressionAlgorithm = new ZipCompression();
+			compressionAlgorithm.run(inputPath, outputPath, maxSplitsize);
+			
 			elapsedTime = System.currentTimeMillis();
-			System.out.println("Took " + (elapsedTime - startTime)/1000 +" seconds");
-		}else{
+			System.out.println("Compression took " + (elapsedTime - startTime)/1000 + " seconds");
+		}
+		else
+		{
 			System.out.println("Input Path invalid");
 		}
 	}
-
 }
