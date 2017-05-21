@@ -8,7 +8,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import chunkedcompression.CompressionBase;
-import chunkedcompression.Constants;
 
 /**
  * 
@@ -28,7 +27,7 @@ public class ZipCompression extends CompressionBase
 	{
 		try
 		{
-			this.maxSplitSize = maxSplitsize; // giving room for zip headers
+			this.maxSplitSize = (int)(maxSplitsize*1024*1024*0.97); // giving room for zip headers
 			addFilesToZip(files, outputPath);
 		}
 		catch(IOException e)

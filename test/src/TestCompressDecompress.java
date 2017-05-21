@@ -2,25 +2,75 @@
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
-
 import org.junit.Test;
+import chunkedcompression.CompressionBase;
+import chunkedcompression.DecompressionBase;
+import chunkedcompression.zip.ZipCompression;
+import chunkedcompression.zip.ZipDecompression;
 
 public class TestCompressDecompress {
-	@Test
-	public void testAdd() throws IOException {
-		String dirOrig = "/home/errol/test/sample";
-		String dirNew = "/home/errol/zipoutput";
 
-		boolean res = EumerateAndCompare(dirOrig,dirNew); 
-		assertEquals(res, true);
+	private void empty(File folder) throws IOException {
+		 File[] files = folder.listFiles();
+		    if(files!=null) { //some JVMs return null for empty dirs
+		        for(File f: files) {
+		            if(f.isDirectory()) {
+		            	empty(f);
+		            } else {
+		                f.delete();
+		            }
+		        }
+		    }
+		    folder.delete();
+	}
+
+	public void veriyEquals(String inputPath,String outputPath,
+			String decompressOutputPath,int maxSplitSize) throws IOException {
+
+		File f = new File(outputPath);
+		empty(f);
+		f.mkdirs();
+		
+		f = new File(decompressOutputPath);
+		empty(f);
+		f.mkdirs();
+
+		CompressionBase compressionAlgorithm = new ZipCompression();
+		compressionAlgorithm.run(inputPath,outputPath,maxSplitSize);
+
+		DecompressionBase decompressionAlgorithm = new ZipDecompression();
+		decompressionAlgorithm.run(outputPath,decompressOutputPath);		
+		boolean equals = EnumerateAndCompare(inputPath,decompressOutputPath); 
+		assertEquals(equals, true);
+	}
+
+	@Test
+	public void test1() throws IOException {   
+		String inputPath = "./test/resources/input/test1";
+
+		String outputPath = System.getProperty("java.io.tmpdir")
+				+ File.separator + "zipOutput";
+		String decompressOutputPath = System.getProperty("java.io.tmpdir")
+				+ File.separator + "decompressOutput";
+		int maxSplitSize = 2;
+
+		veriyEquals(inputPath, outputPath, decompressOutputPath, maxSplitSize);
+		
+		boolean equals =  EnumerateAndCompare("C:\\NetworkSecurity\\m1", 
+				"C:\\NetworkSecurity\\m2");
+		assertEquals(equals, true);
 	}
 
 
-	private boolean EumerateAndCompare(String dir1, String dir2) throws IOException
+	private boolean EnumerateAndCompare(String dir1, String dir2) throws IOException
 	{
 		boolean isCompare = true;
 		File[] fileList1 = new File(dir1).listFiles();
@@ -38,7 +88,7 @@ public class TestCompressDecompress {
 				return false;
 			if (true == fileList1[i].isDirectory())
 			{
-				isCompare &= EumerateAndCompare(fileList1[i].getAbsolutePath(), fileList2[i].getAbsolutePath());
+				isCompare &= EnumerateAndCompare(fileList1[i].getAbsolutePath(), fileList2[i].getAbsolutePath());
 			}
 			else
 				isCompare &= compare(fileList1[i], fileList2[i]);
@@ -47,57 +97,33 @@ public class TestCompressDecompress {
 		return isCompare;
 	}
 
-	private boolean compare(File file1,File file2) throws IOException{
-		byte[] b1 = getBytesFromFile(file1);
-		byte[] b2 = getBytesFromFile(file2);
+	private final boolean compare(final File file1, final File file2) throws IOException {
+		
+		Path filea = Paths.get(file1.getAbsolutePath());
+		Path fileb = Paths.get(file2.getAbsolutePath());
+		
+	    if (Files.size(filea) != Files.size(fileb)) {
+	        return false;
+	    }
+	    final long size = Files.size(filea);
+	    final int mapspan = 4 * 1024 * 1024;
+	    try (FileChannel chana = (FileChannel)Files.newByteChannel(filea);
+	            FileChannel chanb = (FileChannel)Files.newByteChannel(fileb)) {
+	        for (long position = 0; position < size; position += mapspan) {
+	            MappedByteBuffer mba = mapChannel(chana, position, size, mapspan);
+	            MappedByteBuffer mbb = mapChannel(chanb, position, size, mapspan);
 
-		if(b1.length != b2.length) 
-			return false;
-		for(int i = 0; i < b1.length; i++) {
-			if(b1[i] != b2[i]) 
-				return false;
-		}
-		return true;
+	            if (mba.compareTo(mbb) != 0) {
+	                return false;
+	            }
+	        }
+	    }
+	    return true;
 	}
-
-	/**
-	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 */
-	public static byte[] getBytesFromFile(File file) throws IOException {
-		InputStream is = new FileInputStream(file);
-
-		// Get the size of the file
-		long length = file.length();
-
-		// You cannot create an array using a long type.
-		// It needs to be an int type.
-		// Before converting to an int type, check
-		// to ensure that file is not larger than Integer.MAX_VALUE.
-		if (length > Integer.MAX_VALUE) {
-			// File is too large
-		}
-
-		// Create the byte array to hold the data
-		byte[] bytes = new byte[(int)length];
-
-		// Read in the bytes
-		int offset = 0;
-		int numRead = 0;
-		while (offset < bytes.length
-				&& (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-			offset += numRead;
-		}
-
-		// Ensure all the bytes have been read in
-		if (offset < bytes.length) {
-			throw new IOException("Could not completely read file "+file.getName());
-		}
-
-		// Close the input stream and return bytes
-		is.close();
-		return bytes;
+	
+	private MappedByteBuffer mapChannel(FileChannel channel, long position, long size, int mapspan) throws IOException {
+	    final long end = Math.min(size, position + mapspan);
+	    final long maplen = (int)(end - position);
+	    return channel.map(MapMode.READ_ONLY, position, maplen);
 	}
 }
