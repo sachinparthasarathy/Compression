@@ -10,11 +10,18 @@ import java.util.concurrent.TimeUnit;
 
 import chunkedcompression.DecompressionBase;
 
+/**
+ * This class implements the Chunked Zip decompression algorithm
+ *   
+ * @author Sachin Parthasarathy
+ *
+ */
 public class ZipDecompression extends DecompressionBase {
 
 	@Override
 	public void decompress(String inputPath, String outputPath)
 	{
+		System.out.println("Starting decompression...");
 		Map<String,List<String>> fragmentsMap = new ConcurrentHashMap<>();
 		File folder = new File(inputPath);  	
 		File[] files = folder.listFiles();
@@ -38,7 +45,9 @@ public class ZipDecompression extends DecompressionBase {
 			e.printStackTrace();
 		}
 		
-		mergeDecompressedFiles(fragmentsMap);		
+		mergeDecompressedFiles(fragmentsMap);
+		
+		System.out.println("Finished decompression...");
 	}
 
 	private void mergeDecompressedFiles(Map<String,List<String>> fragmentsMap) {

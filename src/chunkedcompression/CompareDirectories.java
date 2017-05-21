@@ -11,13 +11,18 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import chunkedcompression.zip.ZipUtils;
 
+/**
+ * 
+ * @author Sachin Parthasarathy
+ * 
+ */
 public class CompareDirectories {
 
 	public static void main(String[] args) {
 		String inputPath = null;
 		String outputPath  = null;
 		if(args.length != 2){
-			System.out.println("Usage: java Driver inputPath outputPath");
+			System.out.println("Usage: java chunkedcompression.CompareDirectories inputPath outputPath");
 			System.exit(0);
 		}
 

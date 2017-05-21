@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Base class for chunked compression. Provides a hook for the specific algorithms.
+ * @author Sachin Parthasarathy
+ *
+ */
 public abstract class  CompressionBase 
 {
 	protected String basePath = "";
@@ -23,9 +28,14 @@ public abstract class  CompressionBase
 		
 		buildFileList(inputPath);
 		
+		// call the compress method
 		compress(fileList, outputPath, maxSplitSize);
 	}
 	
+	/**
+	 * Creates a list of files in the input directory
+	 * @param inputPath
+	 */
 	private void buildFileList(String inputPath)
 	{
 		File dir = new File(inputPath);
@@ -40,6 +50,4 @@ public abstract class  CompressionBase
 			}
 		}
 	}
-	
-	//abstract void close();
 }

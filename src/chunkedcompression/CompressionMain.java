@@ -4,8 +4,8 @@ import chunkedcompression.zip.ZipCompression;
 import chunkedcompression.zip.ZipUtils;
 
 /**
- * 
- * @author errol
+ * Main driver program for chunked compression
+ * @author Sachin Parthasarathy
  *
  */
 
@@ -16,7 +16,7 @@ public class CompressionMain {
 		String outputPath  = null;
 		int maxSplitsize = 0;	
 		if(args.length != 3){
-			System.out.println("Usage: java Driver inputPath outputPath "
+			System.out.println("Usage: java chunkedcompression.CompressionMain inputPath outputPath "
 					+ "maxSplitsize");
 			System.exit(0);
 		}
@@ -37,6 +37,7 @@ public class CompressionMain {
 		long startTime = System.currentTimeMillis();
 		long elapsedTime = 0L;
 
+		// Invoke the zip compression strategy
 		CompressionBase compressionAlgorithm = new ZipCompression();
 		compressionAlgorithm.run(inputPath, outputPath, maxSplitsize);
 

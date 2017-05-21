@@ -3,6 +3,12 @@ package chunkedcompression;
 import chunkedcompression.zip.ZipDecompression;
 import chunkedcompression.zip.ZipUtils;
 
+/**
+ * Main driver program for chunked decompression
+ * @author Sachin Parthasarathy
+ *
+ */
+
 public class DecompressionMain
 {
 	public static void main( String[] args )
@@ -11,7 +17,7 @@ public class DecompressionMain
 		String outputPath = null;
 
 		if(args.length != 2){
-			System.out.println("Usage: java DecompressMain inputPath outputPath ");
+			System.out.println("Usage: java chunkedcompression.DecompressionMain inputPath outputPath ");
 			System.exit(0);
 		}
 
@@ -27,6 +33,7 @@ public class DecompressionMain
 		long startTime = System.currentTimeMillis();
 		long elapsedTime = 0L;
 
+		// invoke the zip decompression strategy
 		DecompressionBase decompressiongorithm = new ZipDecompression();
 		decompressiongorithm.run(inputPath, outputPath);
 

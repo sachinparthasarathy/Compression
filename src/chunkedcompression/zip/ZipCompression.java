@@ -10,25 +10,48 @@ import java.util.zip.ZipOutputStream;
 import chunkedcompression.CompressionBase;
 
 /**
- * 
+ * This class implements the Chunked Zip compression algorithm
+ *   
  * @author Sachin Parthasarathy
  *
  */
- 
 public class ZipCompression extends CompressionBase
 {
+	/**
+	 * Output zip output stream
+	 */
 	private ZipOutputStream zipOutputStream;
+	
+	/**
+	 * Index of current zip file written.
+	 */
 	private long zipIndex = 0;
+	
+	/**
+	 * Fragment index of current file added to the zip output
+	 */
 	private long fileIndex = 0;
+	
+	/**
+	 * Maximum size of a single zip archive
+	 */
 	private int maxSplitSize = 0;
 
 	@Override
+	/**
+	 * Implements the compress method
+	 * @param files		List of files to be compressed
+	 * @param outputPath	Path where the compressed zip archives will be stored
+	 * @param Maximum size of a single zip archive
+	 */
 	protected void compress(List<File> files, String outputPath, int maxSplitsize) 
 	{
 		try
 		{
-			this.maxSplitSize = (int)(maxSplitsize*1024*1024*0.97); // giving room for zip headers
+			System.out.println("Starting compression...");
+			this.maxSplitSize = (int)(maxSplitsize * 1024 * 1024 * 0.97); // giving room for zip headers
 			addFilesToZip(files, outputPath);
+			System.out.println("Finished compression of " + files.size() + " files.");
 		}
 		catch(IOException e)
 		{
@@ -38,18 +61,18 @@ public class ZipCompression extends CompressionBase
 
 	/**
 	 * This function adds the input file list to the zip archives. Each zip archive has an upper bound on its size.
-	 * 
+	 * Once the size if reached a new zip file is created. The size of compressed bytes written is provided by OutputStreamWithLength
 	 * @param files		List of files to be compressed
 	 * @param outputPath		Path where the compressed zip archives will be stored
 	 * @throws IOException		Throws an IO exception if the file operations fails
 	 */
 	private void addFilesToZip(List<File> files,String outputPath) throws IOException 
 	{
+		// create a zip output stream
 		String zipFileName = outputPath + File.separator + Constants.name + zipIndex + Constants.zipExtension;
 		OutputStreamWithLength chunkedFile = new OutputStreamWithLength(zipFileName);
 		zipOutputStream = new ZipOutputStream(chunkedFile);
-		//long jvmMemory = Runtime.getRuntime().freeMemory();
-		
+		int count = 0;
 		for(File file:files)
 		{
 			if(file.isDirectory())
@@ -64,12 +87,11 @@ public class ZipCompression extends CompressionBase
 				zipEntryPath = zipEntryPath + Constants.fragmentLabel + fileIndex++;
 			else
 				zipEntryPath = zipEntryPath +"/";
-			
+
+			// add the current file to the zip
 			ZipEntry entry =new ZipEntry(zipEntryPath);
 			zipOutputStream.putNextEntry(entry);
 
-			//long fileSize = file.length();
-			//int bufferSize = (int)Math.min(jvmMemory, fileSize);
 			byte[] buffer = new byte[1024];        	 
 
 			FileInputStream inputFileStream = new FileInputStream(file);
@@ -104,6 +126,13 @@ public class ZipCompression extends CompressionBase
 					// write the bytes to the zip output stream
 					zipOutputStream.write(buffer, 0, len);
 				}
+			}
+			
+			count += 1;
+			
+			if (count % 10 == 0)
+			{
+				System.out.println("Finished " + count + " of " + files.size() + " files...");
 			}
 			
 			inputFileStream.close();
