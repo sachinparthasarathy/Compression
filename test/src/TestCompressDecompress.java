@@ -1,6 +1,5 @@
 
 import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
@@ -11,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import org.junit.Test;
+import org.junit.runner.JUnitCore;
+
 import chunkedcompression.CompressionBase;
 import chunkedcompression.DecompressionBase;
 import chunkedcompression.zip.ZipCompression;
@@ -131,5 +132,10 @@ public class TestCompressDecompress {
 	    final long end = Math.min(size, position + mapspan);
 	    final long maplen = (int)(end - position);
 	    return channel.map(MapMode.READ_ONLY, position, maplen);
+	}
+	
+	public static void main(String[] args) throws Exception {                    
+	       JUnitCore.main(
+	         "TestCompressDecompress");
 	}
 }

@@ -3,7 +3,7 @@ package chunkedcompression;
 import chunkedcompression.zip.ZipDecompression;
 import chunkedcompression.zip.ZipUtils;
 
-public class DecompressMain
+public class DecompressionMain
 {
 	public static void main( String[] args )
 	{
