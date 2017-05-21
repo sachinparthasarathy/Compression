@@ -3,6 +3,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
@@ -20,7 +21,7 @@ public class TestCompressDecompress {
 
 	private void empty(File folder) throws IOException {
 		 File[] files = folder.listFiles();
-		    if(files!=null) { //some JVMs return null for empty dirs
+		    if(files!=null) {
 		        for(File f: files) {
 		            if(f.isDirectory()) {
 		            	empty(f);
@@ -54,19 +55,14 @@ public class TestCompressDecompress {
 
 	@Test
 	public void test1() throws IOException {   
-		String inputPath = "./test/resources/input/test1";
-
+		String inputPath = new File("test/resources/input/test1").getAbsolutePath();
 		String outputPath = System.getProperty("java.io.tmpdir")
 				+ File.separator + "zipOutput";
 		String decompressOutputPath = System.getProperty("java.io.tmpdir")
 				+ File.separator + "decompressOutput";
 		int maxSplitSize = 2;
 
-		veriyEquals(inputPath, outputPath, decompressOutputPath, maxSplitSize);
-		
-		boolean equals =  EnumerateAndCompare("C:\\NetworkSecurity\\m1", 
-				"C:\\NetworkSecurity\\m2");
-		assertEquals(equals, true);
+		veriyEquals(inputPath, outputPath, decompressOutputPath, maxSplitSize);		
 	}
 
 
