@@ -26,17 +26,21 @@ How to run?
 --------------------
 For compression,
 1. Multi threaded compression
+
 java -jar CompressDecompressThreaded.jar inputDirectory outputDirectory maxSplitSize
 
 2. Single threaded compression
+
 java -jar CompressDecompress.jar inputDirectory outputDirectory maxSplitSize
 
 
 For multi-threaded decompression,
+
 java -jar CompressDecompressThreaded.jar zipinputDirectory decompressedoutputDirectory
 
 
 For verification/Difference checking,
+
 java -jar CompareDirectories.jar originalInputDirectory decompressedoutputDirectory
  
 
