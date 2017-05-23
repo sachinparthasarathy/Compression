@@ -6,9 +6,13 @@ The project implements a single threaded and multi-threaded solution to zip
 compression and decompression using jdk's zip implementation.
 
 CompressionBase: Base class for a compression algorithm. Provides a hook named compress.
+
 DecompressionBase: Base class for a decompression algorithm. Provides a hook named decompress.
+
 ZipCompression : Extends CompressionBase for a single threaded compression algorithm.
+
 ThreadedZipCompression : Extends CompressionBase for a multi threaded compression algorithm.
+
 ZipDecompression : Extends DecompressionBase for a multi threaded decompression algorithm.
 
 Unit Tests
@@ -38,19 +42,29 @@ java -cp CompressDecompressThreaded.jar chunkedcompression.CompareDirectories or
 Statistics
 ------------
 
-Multi-threaded
-File size	        Compression time	
-2GB(38937 files)         184sec
-10GB(43 files)           330sec
+<b>Multi-threaded</b>
 
-Single-threaded
 File size	        Compression time
+
+2GB(38937 files)         184sec  
+
+10GB(43 files)           330sec  
+
+
+<b>Single-threaded</b>
+
+File size	        Compression time
+
 2GB(38937 files)         220sec
+
 10GB(43 files)           707sec
 
-Decompression time for single and multi-threaded
+<b>Decompression time for single and multi-threaded</b>
+
  File size	        Decompression time
+ 
  2GB(38937 files)         110sec
+ 
  10GB(43 files)           503sec
  
 
