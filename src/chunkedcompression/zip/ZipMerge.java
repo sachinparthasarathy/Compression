@@ -77,6 +77,10 @@ public class ZipMerge {
 		//Execute the merge in parallel
 		ExecutorService executor = Executors.newFixedThreadPool
 				(Constants.noOfProcessors);
+		
+		int count = 0;
+		double totalRead = 0;
+		
 		for (Map.Entry<String,List<String>> entry : fragmentsMap.entrySet())
 		{
 			List<String> toBemergedFiles = entry.getValue();
@@ -87,6 +91,15 @@ public class ZipMerge {
 			Runnable worker = new ZipMergeWorker(toBemergedFiles,entry.getKey()
 					,toBemergedFiles.size());
 			executor.execute(worker);
+			//Show progress
+			System.out.println();
+			totalRead += 1;
+			if(totalRead/fragmentsMap.size() >= 0.1)
+			{
+				totalRead = 0;
+				count += 10;
+				System.out.println("Finished " + count +"%");				
+			}
 		}
 		executor.shutdown();
 		try {

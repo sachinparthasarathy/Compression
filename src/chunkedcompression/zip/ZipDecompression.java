@@ -33,12 +33,22 @@ public class ZipDecompression extends DecompressionBase {
 		ExecutorService executor = Executors.newFixedThreadPool
 				(Constants.noOfProcessors);
 
+		int count = 0;
+		double totalRead = 0;
 		for(File file :files)
 		{
 			String fileName = file.getName();
 			Runnable worker = new ZipDecompressWorker(inputPath + File.separator + fileName,
 					outputPath);
-			executor.execute(worker);			
+			executor.execute(worker);
+			//Show progress
+			totalRead += 1;
+			if(totalRead/files.length >= 0.1)
+			{
+				totalRead = 0;
+				count += 10;
+				System.out.println("Finished " + count +"%");				
+			}
 		}
 
 		executor.shutdown();
@@ -56,7 +66,6 @@ public class ZipDecompression extends DecompressionBase {
 		//Merge the fragments of the decompressed files
 		ZipMerge mergingAlgorithm = new ZipMerge(outputPath);
 		mergingAlgorithm.mergeHelper();	
-		
 		System.out.println("Finished merging...");
 		elapsedTimemerge = System.currentTimeMillis();
 		System.out.println("Merging took " + (elapsedTimemerge - elapsedTimedecompress)/1000 + " seconds");

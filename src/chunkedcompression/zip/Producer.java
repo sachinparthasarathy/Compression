@@ -50,7 +50,7 @@ class Producer implements Runnable
 	 * Overrides the run method and implements the producer 
 	 */
 	public void run() 
-	{
+	{		
 		int bufferSize = 1024 * 1024;
 		//Total file size in bytes
 		totalBytes = new ZipUtils().getTotalFileSize(files);
@@ -96,8 +96,8 @@ class Producer implements Runnable
 						if (progress*100 >= 10)
 						{
 							totalBytesRead = 0L;
-							System.out.println("Finished " + count +"%");
 							count += 10;
+							System.out.println("Finished " + count +"%");
 						}
 					}
 					inputFileStream.close();

@@ -147,8 +147,8 @@ public class ZipCompression extends CompressionBase
 				if (progress*100 > 10)
 				{
 					totalBytesRead = 0L;
-					System.out.println("Finished " + count +"%");
 					count += 10;
+					System.out.println("Finished " + count +"%");
 				}
 			}						
 			inputFileStream.close();
