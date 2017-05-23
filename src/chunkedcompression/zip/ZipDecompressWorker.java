@@ -4,36 +4,50 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * This is a worker class which performs the actual decompression in parallel
+ * @author Sachin Parthasarathy
+ *
+ */
 class ZipDecompressWorker implements Runnable
 {
+	/**
+	 * Path where the compressed zip archives are stored
+	 */
 	private String inputZipFile = "";
+	
+	/**
+	 * Path where the decompressed output will be stored
+	 */
 	private String outputFolder = "";
-	private Map<String,List<String>> fragmentsMap = new ConcurrentHashMap<>();
 
-	public ZipDecompressWorker(String inputFile,String outputFolder,
-			Map<String,List<String>> fragmentsMap)
+	public ZipDecompressWorker(String inputFile,String outputFolder)
 	{
 		this.inputZipFile = inputFile;
 		this.outputFolder = outputFolder;
-		this.fragmentsMap = fragmentsMap;
 	}
 
 	@Override
+	/**
+	 * Overrides the run method which performs the decompression
+	 */
 	public void run()
 	{
 		deCompressZip(inputZipFile);
 	}
 
+	/**
+	 * This functions implements the decompression function in parallel
+	 * @param zipFile The zip file to be decompressed
+	 */
 	public void deCompressZip(String zipFile){
 
+		//Read 1024 byte chunks at a time
 		byte[] buffer = new byte[1024];   
+		String fileNameTemp = "";
 		try{
 			File folder = new File(outputFolder);    	
 
@@ -47,38 +61,34 @@ class ZipDecompressWorker implements Runnable
 
 			while(zipEntry!=null){
 
-				String fileName = zipEntry.getName();				
+				String fileName = zipEntry.getName();
+				fileNameTemp = fileName;
 				File newFile = new File(outputFolder + File.separator + fileName);
+				//Create the parent directories
 				new File(newFile.getParent()).mkdirs();
+				//If current entry is a directory, create a directory
+				if(fileName.endsWith("/"))
+				{
+					newFile.mkdir();
+					zipEntry = zipInputStream.getNextEntry();
+					continue;
+				}
+				//Create file output stream for writing the decompressed file.
 				FileOutputStream fileOpStream = new FileOutputStream(newFile);
 				int len;
 				while ((len = zipInputStream.read(buffer)) > 0) {
 					fileOpStream.write(buffer, 0, len);
 				}
-
 				fileOpStream.close();
-				addToMap(newFile);
+				//Get next entry from the zip
 				zipEntry = zipInputStream.getNextEntry();
 			}
 			zipInputStream.closeEntry();
 			zipInputStream.close();
 
 		}catch(IOException ex){
+			System.out.println(fileNameTemp + " "+zipFile);
 			ex.printStackTrace();
 		}
-	}
-
-	private void addToMap(File file)
-	{
-		String fragmentedName = file.getName();
-		int idx = fragmentedName.lastIndexOf(".") - 5;
-		String originalName = file.getParent() + File.separator 
-				+ fragmentedName.substring(0,idx);
-		List<String> mergedFiles = new LinkedList<>();
-		if(fragmentsMap.containsKey(originalName))
-			mergedFiles = fragmentsMap.get(originalName);
-		mergedFiles.add(file.getParent()+ File.separator 
-				+fragmentedName);
-		fragmentsMap.put(originalName, mergedFiles);
 	}
 }

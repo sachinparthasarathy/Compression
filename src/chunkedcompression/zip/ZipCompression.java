@@ -36,6 +36,11 @@ public class ZipCompression extends CompressionBase
 	 * Maximum size of a single zip archive
 	 */
 	private int maxSplitSize = 0;
+	
+	/**
+	 * Total bytes of all the files
+	 */
+	private long totalBytes = 0;
 
 	@Override
 	/**
@@ -48,10 +53,15 @@ public class ZipCompression extends CompressionBase
 	{
 		try
 		{
+			long startTime = System.currentTimeMillis();
+			long elapsedTime = 0L;
 			System.out.println("Starting compression...");
-			this.maxSplitSize = (int)(maxSplitsize * 1024 * 1024 * 0.97); // giving room for zip headers
+			this.maxSplitSize = (int)(maxSplitsize * 1024 * 1024 * 0.96); // giving room for zip headers
+			totalBytes = new ZipUtils().getTotalFileSize(files);
 			addFilesToZip(files, outputPath);
 			System.out.println("Finished compression of " + files.size() + " files.");
+			elapsedTime = System.currentTimeMillis();
+			System.out.println("Compression took " + (elapsedTime - startTime)/1000 + " seconds");
 		}
 		catch(IOException e)
 		{
@@ -72,21 +82,25 @@ public class ZipCompression extends CompressionBase
 		String zipFileName = outputPath + File.separator + Constants.name + zipIndex + Constants.zipExtension;
 		OutputStreamWithLength chunkedFile = new OutputStreamWithLength(zipFileName);
 		zipOutputStream = new ZipOutputStream(chunkedFile);
-		int count = 0;
+		double totalBytesRead = 0L;
+		int count = 10; 
 		for(File file:files)
 		{
-			if(file.isDirectory())
-				continue;
-
 			// reset the file index
 			fileIndex = 0;
-		
 			String zipEntryPath = file.getAbsolutePath().substring(basePath.length() + 0);
-
-			if(!file.isDirectory())
-				zipEntryPath = zipEntryPath + Constants.fragmentLabel + fileIndex++;
+			
+			if(file.isDirectory())
+			{
+				ZipEntry entry =new ZipEntry(zipEntryPath+"/");
+				zipOutputStream.putNextEntry(entry);
+				zipOutputStream.closeEntry();
+				continue;
+			}			
 			else
-				zipEntryPath = zipEntryPath +"/";
+			{
+				zipEntryPath = zipEntryPath + Constants.fragmentLabel + fileIndex++;
+			}			
 
 			// add the current file to the zip
 			ZipEntry entry =new ZipEntry(zipEntryPath);
@@ -126,15 +140,17 @@ public class ZipCompression extends CompressionBase
 					// write the bytes to the zip output stream
 					zipOutputStream.write(buffer, 0, len);
 				}
-			}
-			
-			count += 1;
-			
-			if (count % 10 == 0)
-			{
-				System.out.println("Finished " + count + " of " + files.size() + " files...");
-			}
-			
+				
+				//Show progress
+				totalBytesRead += len;
+				double progress = totalBytesRead / totalBytes;
+				if (progress*100 > 10)
+				{
+					totalBytesRead = 0L;
+					System.out.println("Finished " + count +"%");
+					count += 10;
+				}
+			}						
 			inputFileStream.close();
 		}
 

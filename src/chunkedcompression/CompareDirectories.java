@@ -61,7 +61,12 @@ public class CompareDirectories {
 	{
 		boolean isCompare = true;
 		File[] fileList1 = new File(dir1).listFiles();
+			
 		File[] fileList2 = new File(dir2).listFiles();
+		
+		//Some files in Windows are not accessible
+		if(null == fileList1)
+			return true;
 
 		Arrays.sort(fileList1);
 		Arrays.sort(fileList2);

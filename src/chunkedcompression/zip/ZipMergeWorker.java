@@ -12,28 +12,54 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * This class merges the fragments for each file in parallel
+ * @author Sachin Parthasarathy
+ *
+ */
 class ZipMergeWorker implements Runnable
 {
+	/**
+	 * List of input fragments
+	 */
 	List<String> inputFile;
+	
+	/**
+	 * Name of the finally merged file
+	 */
 	String outputFile;
-	int noOfFiles;
+	
+	/**
+	 * Number of fragments in each file
+	 */
+	int noOfFragments;
 
-	public ZipMergeWorker(List<String> inputFile,String outputFile,int noOfFiles)
+	public ZipMergeWorker(List<String> inputFile,String outputFile
+			,int noOfFragments)
 	{
 		this.inputFile = inputFile;
 		this.outputFile = outputFile;
-		this.noOfFiles = noOfFiles;
+		this.noOfFragments = noOfFragments;
 	}
 
+	@Override
+	/**
+	 * Overrides the run method which performs the decompression
+	 */
 	public void run()
 	{
 		doMerge();
 	}
 
 
+	/**
+	 * This function performs the actual merge
+	 */
 	private void doMerge()
 	{
-		if(noOfFiles == 1)
+		//If its a single fragment, just rename the file and remove the fragment
+		// label
+		if(noOfFragments == 1)
 		{
 			File oldFile = new File(inputFile.get(0));
 			File newFile = new File(outputFile);
@@ -41,6 +67,7 @@ class ZipMergeWorker implements Runnable
 		}
 		else
 		{
+			//Combine all the fragments into a single output stream
 			Path outFile=Paths.get(outputFile);
 			try(FileChannel out=FileChannel.open(outFile, CREATE, WRITE)) {
 				for(int ix=0, n=inputFile.size(); ix<n; ix++) {
@@ -49,6 +76,7 @@ class ZipMergeWorker implements Runnable
 						for(long p=0, l=in.size(); p<l; )
 							p+=in.transferTo(p, l-p, out);
 					}
+					//Delete the fragments
 					Files.delete(inFile);
 				}
 			} catch (IOException e) {

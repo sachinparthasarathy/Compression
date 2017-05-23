@@ -1,13 +1,9 @@
 package chunkedcompression.zip;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import chunkedcompression.DecompressionBase;
 
 /**
@@ -19,13 +15,21 @@ import chunkedcompression.DecompressionBase;
 public class ZipDecompression extends DecompressionBase {
 
 	@Override
+	/**
+	 * Implements the decompress method
+	 * @param inputPath		Path where the compressed zip archives are stored
+	 * @param outputPath	Path where the decompressed output will be stored
+	 */
 	public void decompress(String inputPath, String outputPath)
 	{
+		long startTime = System.currentTimeMillis();
+		long elapsedTimedecompress = 0L;
+		long elapsedTimemerge = 0L;
 		System.out.println("Starting decompression...");
-		Map<String,List<String>> fragmentsMap = new ConcurrentHashMap<>();
 		File folder = new File(inputPath);  	
 		File[] files = folder.listFiles();
 
+		//Create multiple threads for parallel decompression
 		ExecutorService executor = Executors.newFixedThreadPool
 				(Constants.noOfProcessors);
 
@@ -33,25 +37,28 @@ public class ZipDecompression extends DecompressionBase {
 		{
 			String fileName = file.getName();
 			Runnable worker = new ZipDecompressWorker(inputPath + File.separator + fileName,
-					outputPath,fragmentsMap);
+					outputPath);
 			executor.execute(worker);			
 		}
-		
+
 		executor.shutdown();
-		
+		//Wait for all threads to finish
 		try {
 			while (!executor.awaitTermination(2, TimeUnit.SECONDS)) {}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		mergeDecompressedFiles(fragmentsMap);
-		
-		System.out.println("Finished decompression...");
-	}
 
-	private void mergeDecompressedFiles(Map<String,List<String>> fragmentsMap) {
-		ZipMerge mergingAlgorithm = new ZipMerge(fragmentsMap);
-		mergingAlgorithm.mergeHelper();		
+		System.out.println("Finished decompression...");
+		elapsedTimedecompress = System.currentTimeMillis();
+		System.out.println("DeCompression took " + (elapsedTimedecompress - startTime)/1000 + " seconds");
+
+		//Merge the fragments of the decompressed files
+		ZipMerge mergingAlgorithm = new ZipMerge(outputPath);
+		mergingAlgorithm.mergeHelper();	
+		
+		System.out.println("Finished merging...");
+		elapsedTimemerge = System.currentTimeMillis();
+		System.out.println("Merging took " + (elapsedTimemerge - elapsedTimedecompress)/1000 + " seconds");
 	}
 }

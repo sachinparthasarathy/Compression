@@ -1,5 +1,7 @@
 package chunkedcompression;
 
+
+import chunkedcompression.zip.ThreadedZipCompression;
 import chunkedcompression.zip.ZipCompression;
 import chunkedcompression.zip.ZipUtils;
 
@@ -14,7 +16,9 @@ public class CompressionMain {
 	{
 		String inputPath = null;
 		String outputPath  = null;
-		int maxSplitsize = 0;	
+		int maxSplitsize = 0;
+		
+
 		if(args.length != 3){
 			System.out.println("Usage: java chunkedcompression.CompressionMain inputPath outputPath "
 					+ "maxSplitsize");
@@ -34,14 +38,10 @@ public class CompressionMain {
 		ziputils.outputPathCheck(outputPath);
 		ziputils.checkOutputDirEmpty(outputPath);
 
-		long startTime = System.currentTimeMillis();
-		long elapsedTime = 0L;
 
 		// Invoke the zip compression strategy
+		//CompressionBase compressionAlgorithm = new ThreadedZipCompression();
 		CompressionBase compressionAlgorithm = new ZipCompression();
 		compressionAlgorithm.run(inputPath, outputPath, maxSplitsize);
-
-		elapsedTime = System.currentTimeMillis();
-		System.out.println("Compression took " + (elapsedTime - startTime)/1000 + " seconds");
 	}
 }

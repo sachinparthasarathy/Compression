@@ -18,7 +18,7 @@ public class OutputStreamWithLength extends OutputStream{
 	/**
 	 * The output file
 	 */
-	private File file;
+	public File file;
 	
 	/**
 	 * Using a random access file to output

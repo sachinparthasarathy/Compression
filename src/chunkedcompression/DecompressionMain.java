@@ -1,5 +1,6 @@
 package chunkedcompression;
 
+
 import chunkedcompression.zip.ZipDecompression;
 import chunkedcompression.zip.ZipUtils;
 
@@ -28,16 +29,10 @@ public class DecompressionMain
 		// check if paths are valid
 		ziputils.inputPathCheck(inputPath);
 		ziputils.outputPathCheck(outputPath);
-		ziputils.checkOutputDirEmpty(outputPath);		
-
-		long startTime = System.currentTimeMillis();
-		long elapsedTime = 0L;
+		ziputils.checkOutputDirEmpty(outputPath);				
 
 		// invoke the zip decompression strategy
 		DecompressionBase decompressiongorithm = new ZipDecompression();
-		decompressiongorithm.run(inputPath, outputPath);
-
-		elapsedTime = System.currentTimeMillis();
-		System.out.println("Decompression took " + (elapsedTime - startTime)/1000 +" seconds");
+		decompressiongorithm.run(inputPath, outputPath);		
 	}	
 }
