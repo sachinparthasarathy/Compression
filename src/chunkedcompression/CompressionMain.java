@@ -1,9 +1,9 @@
 package chunkedcompression;
 
 
-import chunkedcompression.zip.ThreadedZipCompression;
 import chunkedcompression.zip.ZipCompression;
 import chunkedcompression.zip.ZipUtils;
+import chunkedcompression.zip.multiThreaded.ThreadedZipCompression;
 
 /**
  * Main driver program for chunked compression
@@ -39,8 +39,14 @@ public class CompressionMain {
 		ziputils.checkOutputDirEmpty(outputPath);
 
 
-		// Invoke the zip compression strategy
+		/*
+		 * Invoke the multi-threaded zip compression strategy
+		 */
 		//CompressionBase compressionAlgorithm = new ThreadedZipCompression();
+		
+		/*
+		 *  Invoke the single-threaded zip compression strategy
+		 */
 		CompressionBase compressionAlgorithm = new ZipCompression();
 		compressionAlgorithm.run(inputPath, outputPath, maxSplitsize);
 	}

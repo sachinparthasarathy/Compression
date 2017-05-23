@@ -1,8 +1,11 @@
-package chunkedcompression.zip;
+package chunkedcompression.zip.multiThreaded;
 
 import java.io.File;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import chunkedcompression.zip.Constants;
+import chunkedcompression.zip.OutputStreamWithLength;
 
 /**
  * This class implements the Consumer which reads data from buffer,

@@ -32,23 +32,13 @@ public class ZipDecompression extends DecompressionBase {
 		//Create multiple threads for parallel decompression
 		ExecutorService executor = Executors.newFixedThreadPool
 				(Constants.noOfProcessors);
-
-		int count = 0;
-		double totalRead = 0;
+		
 		for(File file :files)
 		{
 			String fileName = file.getName();
 			Runnable worker = new ZipDecompressWorker(inputPath + File.separator + fileName,
 					outputPath);
-			executor.execute(worker);
-			//Show progress
-			totalRead += 1;
-			if(totalRead/files.length >= 0.1)
-			{
-				totalRead = 0;
-				count += 10;
-				System.out.println("Finished " + count +"%");				
-			}
+			executor.execute(worker);			
 		}
 
 		executor.shutdown();

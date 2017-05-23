@@ -1,4 +1,4 @@
-package chunkedcompression.zip;
+package chunkedcompression.zip.multiThreaded;
 
 /**
  * This class defines a custom buffer data type which is used in Threaded

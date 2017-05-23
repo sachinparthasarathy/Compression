@@ -1,4 +1,4 @@
-package chunkedcompression.zip;
+package chunkedcompression.zip.multiThreaded;
 
 
 import java.io.File;
@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import chunkedcompression.zip.Constants;
+import chunkedcompression.zip.ZipUtils;
 
 /**
  * This class implements the Producer which writes data from buffer,
@@ -39,6 +42,7 @@ class Producer implements Runnable
 	 * Total bytes of the files
 	 */
 	private long totalBytes = 0;
+	
 
 	public Producer(List<File> files, String basePath)
 	{
@@ -51,7 +55,7 @@ class Producer implements Runnable
 	 */
 	public void run() 
 	{		
-		int bufferSize = 1024 * 1024;
+		int bufferSize =  1024 * 1024;
 		//Total file size in bytes
 		totalBytes = new ZipUtils().getTotalFileSize(files);
 		double totalBytesRead = 0L;

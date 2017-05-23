@@ -1,4 +1,4 @@
-package chunkedcompression.zip;
+package chunkedcompression.zip.multiThreaded;
 
 import java.io.File;
 import java.util.List;
@@ -9,6 +9,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipOutputStream;
 
 import chunkedcompression.CompressionBase;
+import chunkedcompression.zip.Constants;
+import chunkedcompression.zip.OutputStreamWithLength;
+import chunkedcompression.zip.ZipUtils;
 
 /**
  * This class implements the Chunked Zip compression algorithm
@@ -37,14 +40,14 @@ public class ThreadedZipCompression extends CompressionBase
 	 * @param outputPath	Path where the compressed zip archives will be stored
 	 * @param Maximum size of a single zip archive
 	 */
-	protected void compress(List<File> files, String outputPath, int maxSplitsize) 
+	protected void compress(List<File> files, String outputPath, int maxSplitsizeinMB) 
 	{
 		try
 		{
 			long startTime = System.currentTimeMillis();
 			long elapsedTime = 0L;
 			System.out.println("Starting compression...");
-			this.maxSplitSize = (int)(maxSplitsize * 1024 * 1024 * 0.97); // giving room for zip headers
+			this.maxSplitSize = (int)(maxSplitsizeinMB * 1024 * 1024 * 0.97); // giving room for zip headers
 
 
 			//Single thread of producer to produce data

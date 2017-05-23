@@ -9,9 +9,21 @@ import chunkedcompression.CompressionBase;
 import chunkedcompression.DecompressionBase;
 import chunkedcompression.zip.ZipCompression;
 import chunkedcompression.zip.ZipDecompression;
+import chunkedcompression.zip.multiThreaded.ThreadedZipCompression;
 
+/**
+ * This class performs unit tests on sample files for both single 
+ * and multi-threaded  compression and decompression
+ * @author Sachin Parthasarathy
+ *
+ */
 public class TestCompressDecompress {
 
+	/**
+	 * Clear the temp folders
+	 * @param folder
+	 * @throws IOException
+	 */
 	private void empty(File folder) throws IOException {
 		 File[] files = folder.listFiles();
 		    if(files!=null) {
@@ -26,8 +38,18 @@ public class TestCompressDecompress {
 		    folder.delete();
 	}
 
+	/**
+	 * Run compression and decompression and verify if the directories match
+	 * @param inputPath
+	 * @param outputPath
+	 * @param decompressOutputPath
+	 * @param maxSplitSize
+	 * @param compressionAlgorithm
+	 * @throws IOException
+	 */
 	public void veriyEquals(String inputPath,String outputPath,
-			String decompressOutputPath,int maxSplitSize) throws IOException {
+			String decompressOutputPath,int maxSplitSize
+			,CompressionBase compressionAlgorithm) throws IOException {
 
 		File f = new File(outputPath);
 		empty(f);
@@ -37,7 +59,6 @@ public class TestCompressDecompress {
 		empty(f);
 		f.mkdirs();
 
-		CompressionBase compressionAlgorithm = new ZipCompression();
 		compressionAlgorithm.run(inputPath,outputPath,maxSplitSize);
 
 		DecompressionBase decompressionAlgorithm = new ZipDecompression();
@@ -48,6 +69,10 @@ public class TestCompressDecompress {
 	}
 
 	@Test
+	/**
+	 * Unit test on sample1 with image files
+	 * @throws IOException
+	 */
 	public void test1() throws IOException {   
 		String inputPath = new File("test/resources/input/test1").getAbsolutePath();
 		String outputPath = System.getProperty("java.io.tmpdir")
@@ -56,10 +81,15 @@ public class TestCompressDecompress {
 				+ File.separator + "decompressOutput1";
 		int maxSplitSize = 2;
 
-		veriyEquals(inputPath, outputPath, decompressOutputPath, maxSplitSize);		
+		veriyEquals(inputPath, outputPath, decompressOutputPath, maxSplitSize
+				,  new ZipCompression());		
 	}
 	
 	@Test
+	/**
+	 * Unit test on sample 2 with empty files, directories and pdf
+	 * @throws IOException
+	 */
 	public void test2() throws IOException {   
 		String inputPath = new File("test/resources/input/test2").getAbsolutePath();
 		String outputPath = System.getProperty("java.io.tmpdir")
@@ -68,7 +98,8 @@ public class TestCompressDecompress {
 				+ File.separator + "decompressOutput2";
 		int maxSplitSize = 2;
 
-		veriyEquals(inputPath, outputPath, decompressOutputPath, maxSplitSize);		
+		veriyEquals(inputPath, outputPath, decompressOutputPath, maxSplitSize
+				, new ThreadedZipCompression());		
 	}
 
 	
