@@ -42,7 +42,7 @@ java -cp CompressDecompressThreaded.jar chunkedcompression.CompareDirectories or
 Statistics
 ------------
 
-Multi-threaded
+<b>Multi-threaded</b>
 
 File size	        Compression time
 
@@ -51,7 +51,7 @@ File size	        Compression time
 10GB(43 files)           330sec  
 
 
-Single-threaded
+<b>Single-threaded</b>
 
 File size	        Compression time
 
@@ -59,7 +59,7 @@ File size	        Compression time
 
 10GB(43 files)           707sec
 
-Decompression time for single and multi-threaded
+<b>Decompression time for single and multi-threaded</b>
 
  File size	        Decompression time
  
