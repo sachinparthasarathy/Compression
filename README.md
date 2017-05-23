@@ -22,6 +22,7 @@ Simple unit tests have been added in test folder.
 
 How to run?
 --------------------
+Jars are present in the jar directory.
 For compression,
 1. Multi threaded compression
 java -cp CompressDecompressThreaded.jar chunkedcompression.CompressionMain inputDirectory outputDirectory maxSplitSize
