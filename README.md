@@ -1,5 +1,7 @@
 # Chunked Compression
 
+https://github.com/sachinparthasarathy/Compression.git
+
 Project description
 --------------------
 The project implements a single threaded and multi-threaded solution to zip
@@ -20,18 +22,18 @@ How to run?
 --------------------
 For compression,
 1. Multi threaded compression
-java -cp CompressDecompressThreaded.jar chunkedcompression.CompressionMain inputDirectory outputDirectory maxSplitSize
+java -jar CompressDecompressThreaded.jar inputDirectory outputDirectory maxSplitSize
 
 2. Single threaded compression
-java -cp CompressDecompress.jar chunkedcompression.CompressionMain inputDirectory outputDirectory maxSplitSize
+java -jar CompressDecompress.jar inputDirectory outputDirectory maxSplitSize
 
 
 For multi-threaded decompression,
-java -cp CompressDecompressThreaded.jar chunkedcompression.DecompressionMain zipinputDirectory decompressedoutputDirectory
+java -jar CompressDecompressThreaded.jar zipinputDirectory decompressedoutputDirectory
 
 
 For verification/Difference checking,
-java -cp CompressDecompressThreaded.jar chunkedcompression.CompareDirectories originalInputDirectory decompressedoutputDirectory
+java -jar CompareDirectories.jar originalInputDirectory decompressedoutputDirectory
  
 
 
