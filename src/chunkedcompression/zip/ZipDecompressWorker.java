@@ -63,7 +63,10 @@ class ZipDecompressWorker implements Runnable
 
 				String fileName = zipEntry.getName();
 				fileNameTemp = fileName;
-				File newFile = new File(outputFolder + File.separator + fileName);
+				File newFile = new File(outputFolder, fileName);
+				if(!newFile.toPath().normalize().startsWith(outputFolder)) {
+					throw new IOException("Bad zip entry");
+				}
 				//Create the parent directories
 				new File(newFile.getParent()).mkdirs();
 				//If current entry is a directory, create a directory
